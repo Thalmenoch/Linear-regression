@@ -2,15 +2,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Função para calcular o erro quadrático médio (MSE)
-def calcular_mse(y, y_pred):
-    return np.mean((y - y_pred) ** 2)
+#Cálculo do MSE
+def MSE(y, y_previsto):
+    return np.mean((y - y_previsto) ** 2)
 
 # Gradiente Descendente
 def gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes):
     # Inicialize os parâmetros do modelo
     coef_angular = 0
-    intercepto = 0
+    coef_linear = 0
     m = len(x)
     
     # Lista para armazenar o histórico do MSE
@@ -18,7 +18,7 @@ def gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes):
     
     for _ in range(num_iteracoes):
         # Calcule as previsões do modelo
-        y_pred = coef_angular * x + intercepto
+        y_pred = coef_angular * x + coef_linear
         
         # Calcule o gradiente dos parâmetros
         gradiente_coef = (-2/m) * np.sum(x * (y - y_pred))
@@ -26,50 +26,52 @@ def gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes):
         
         # Atualize os parâmetros usando o gradiente
         coef_angular -= taxa_aprendizado * gradiente_coef
-        intercepto -= taxa_aprendizado * gradiente_intercepto
+        coef_linear -= taxa_aprendizado * gradiente_intercepto
         
         # Calcule o MSE atual e o armazene
-        mse_atual = calcular_mse(y, y_pred)
+        mse_atual = MSE(y, y_pred)
         mse_hist.append(mse_atual)
     
-    return coef_angular, intercepto, mse_hist
+    return coef_angular, coef_linear, mse_hist
 
-colunas = ['x', 'y']
 
-df = pd.read_csv('artificial1d.csv', names=colunas) 
+if __name__ == '__name__':
+    colunas = ['x', 'y']
 
-x = df['x']
-y = df['y']
+    df = pd.read_csv('regressão_linear_simples/artificial1d.csv', names=colunas) 
 
-# Médias
-media_x = np.mean(x)
-media_y = np.mean(y)
+    x = df['x']
+    y = df['y']
 
-# Defina hiperparâmetros do Gradiente Descendente
-taxa_aprendizado = 0.01
-num_iteracoes = 1000
+    # Médias
+    media_x = np.mean(x)
+    media_y = np.mean(y)
 
-# Execute o Gradiente Descendente
-coef_angular, intercepto, mse_hist = gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes)
+    #Hiperparâmetros do Gradiente Descendente
+    taxa_aprendizado = 0.01
+    num_iteracoes = 10
 
-# Imprima os parâmetros do modelo e o MSE
-print(f"Coeficiente Angular: {coef_angular:.2f}")
-print(f"Intercepto: {intercepto:.2f}")
-print(f"Erro Quadrático Médio (MSE): {mse_hist[-1]:.2f}")
+    #Execute o Gradiente Descendente
+    coef_angular, coef_linear, mse_hist = gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes)
 
-# Plote a curva de aprendizagem (MSE vs. Iterações)
-plt.plot(range(1, num_iteracoes + 1), mse_hist)
-plt.xlabel('Número de Iterações')
-plt.ylabel('Erro Quadrático Médio (MSE)')
-plt.title('Curva de Aprendizagem do Gradiente Descendente')
-plt.show()
+    #Print dos parâmetros do modelo e o MSE
+    print(f"Coeficiente Angular: {coef_angular:.2f}")
+    print(f"Intercepto: {coef_linear:.2f}")
+    print(f"Erro Quadrático Médio (MSE): {mse_hist[-1]:.2f}")
 
-# Plote a reta resultante sobre os dados
-y_pred = coef_angular * x + intercepto
-plt.scatter(x, y, label='Dados Originais')
-plt.plot(x, y_pred, color='red', label='Regressão Linear')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.legend()
-plt.title('Regressão Linear com Gradiente Descendente')
-plt.show()
+    # Plote a curva de aprendizagem (MSE vs. Iterações)
+    plt.plot(range(1, num_iteracoes + 1), mse_hist)
+    plt.xlabel('Número de Iterações')
+    plt.ylabel('Erro Quadrático Médio (MSE)')
+    plt.title('Curva de Aprendizagem do Gradiente Descendente')
+    plt.show()
+
+    # Plote a reta resultante sobre os dados
+    y_pred = coef_angular * x + coef_linear
+    plt.scatter(x, y, label='Dados Originais')
+    plt.plot(x, y_pred, color='red', label='Regressão Linear')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.title('Regressão Linear com Gradiente Descendente')
+    plt.show()

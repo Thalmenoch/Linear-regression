@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     colunas = ['x', 'y']
 
-    df = pd.read_csv('artificial1d.csv', names=colunas) 
+    df = pd.read_csv('regressão_linear_simples/artificial1d.csv', names=colunas) 
 
     x = df['x']
     y = df['y']
