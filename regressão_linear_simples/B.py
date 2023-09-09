@@ -6,70 +6,75 @@ import matplotlib.pyplot as plt
 def MSE(y, y_previsto):
     return np.mean((y - y_previsto) ** 2)
 
-# Gradiente Descendente
-def gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes):
-    # Inicialize os parâmetros do modelo
+#Gradiente Descendente
+def gradiente_descendente(x, y, taxa_aprendizado, nmr_iteracoes):
+    #Inicialização dos parâmetros do modelo
     coef_angular = 0
-    coef_linear = 0
-    m = len(x)
+    vies = 0
+    m = len(x) #Normaliza o gradiente pela quantidade de pontos de dados
     
-    # Lista para armazenar o histórico do MSE
-    mse_hist = []
+    #Lista para armazenar os valores do MSE
+    lista_mse = []
     
-    for _ in range(num_iteracoes):
-        # Calcule as previsões do modelo
-        y_pred = coef_angular * x + coef_linear
+    for _ in range(nmr_iteracoes):
+        #Cálcula as previsões do modelo
+        y_previsto = coef_angular * x + vies
         
-        # Calcule o gradiente dos parâmetros
-        gradiente_coef = (-2/m) * np.sum(x * (y - y_pred))
-        gradiente_intercepto = (-2/m) * np.sum(y - y_pred)
+        #Cálcula os gradientes dos parâmetros
+        gradiente_coef_angular = (-2/m) * np.sum(x * (y - y_previsto))
+        gradiente_vies = (-2/m) * np.sum(y - y_previsto)
         
-        # Atualize os parâmetros usando o gradiente
-        coef_angular -= taxa_aprendizado * gradiente_coef
-        coef_linear -= taxa_aprendizado * gradiente_intercepto
+        #Atualiza os parâmetros usando o gradiente
+        coef_angular -= taxa_aprendizado * gradiente_coef_angular
+        vies -= taxa_aprendizado * gradiente_vies
         
-        # Calcule o MSE atual e o armazene
-        mse_atual = MSE(y, y_pred)
-        mse_hist.append(mse_atual)
+        #Cálculo do MSE atual e o armazenenamento dele na lista
+        mse_atual = MSE(y, y_previsto)
+        lista_mse.append(mse_atual)
     
-    return coef_angular, coef_linear, mse_hist
+    return coef_angular, vies, lista_mse
 
 
-if __name__ == '__name__':
-    colunas = ['x', 'y']
+if __name__ == '__main__':
+    #Nomeando as colunas
+    colunas = ['a', 'b']
 
     df = pd.read_csv('regressão_linear_simples/artificial1d.csv', names=colunas) 
 
-    x = df['x']
-    y = df['y']
+    x = df['a']
+    y = df['b']
 
     # Médias
-    media_x = np.mean(x)
-    media_y = np.mean(y)
+    # media_x = np.mean(x)
+    # media_y = np.mean(y)
+
+    #Normalização das características
+    x = (x - x.mean()) / x.std()
 
     #Hiperparâmetros do Gradiente Descendente
-    taxa_aprendizado = 0.01
-    num_iteracoes = 10
+    taxa_aprendizado = 0.02
+    nmr_iteracoes = 500
+    # nmr_iteracoes = 60
 
-    #Execute o Gradiente Descendente
-    coef_angular, coef_linear, mse_hist = gradiente_descendente(x, y, taxa_aprendizado, num_iteracoes)
+    #Variáveis que recebem o Gradiente Descendente
+    coef_angular, vies, lista_mse = gradiente_descendente(x, y, taxa_aprendizado, nmr_iteracoes)
 
-    #Print dos parâmetros do modelo e o MSE
+    #Print dos parâmetros do modelo 
     print(f"Coeficiente Angular: {coef_angular:.2f}")
-    print(f"Intercepto: {coef_linear:.2f}")
-    print(f"Erro Quadrático Médio (MSE): {mse_hist[-1]:.2f}")
+    print(f"Viés: {vies:.2f}")
+    print(f"MSE: {lista_mse[-1]:.2f}")
 
-    # Plote a curva de aprendizagem (MSE vs. Iterações)
-    plt.plot(range(1, num_iteracoes + 1), mse_hist)
+    #Plotando a curva de aprendizagem 
+    plt.plot(range(1, nmr_iteracoes + 1), lista_mse)
     plt.xlabel('Número de Iterações')
     plt.ylabel('Erro Quadrático Médio (MSE)')
     plt.title('Curva de Aprendizagem do Gradiente Descendente')
     plt.show()
 
-    # Plote a reta resultante sobre os dados
-    y_pred = coef_angular * x + coef_linear
-    plt.scatter(x, y, label='Dados Originais')
-    plt.plot(x, y_pred, color='red', label='Regressão Linear')
+    #Plotando a reta de regressão sobre os dados
+    y_previsto = coef_angular * x + vies
+    plt.scatter(x, y, label='Dados Recebidos')
+    plt.plot(x, y_previsto, color='red', label='Regressão Linear')
     plt.xlabel('x')
     plt.ylabel('y')
     plt.legend()
