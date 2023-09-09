@@ -2,63 +2,82 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-colunas = ['x', 'y']
+#Cálculo do MSE
+def MSE(y, y_previsto):
+    return np.mean((y - y_previsto) ** 2)
 
-dados = pd.read_csv('regressão_linear_simples/artificial1d.csv', names=colunas) 
+#Cálculo do Gradiente Descendente Estocástico
+def SGD(x, y, taxa_aprendizado, nmr_iteracoes):
+    #Inicialização dos parâmetros do modelo
+    coef_angular = 0
+    vies = 0
+    norm = len(x) #Normaliza o gradiente pela quantidade de pontos de dados
+    
+    #Lista para armazenar os valores do MSE
+    lista_mse = []
 
-# Separe os dados em x e y
-x = dados['x']
-y = dados['y']
+    for _ in range(nmr_iteracoes):
+        #Escolha aleatória de um ponto de dados 
+        index = np.random.randint(0, norm)
 
-# Normalize as características (opcional, mas pode ajudar a convergência)
-x = (x - x.mean()) / x.std()
+        #Cálculo da previsão do modelo para o ponto de dados selecionado
+        y_previsto = coef_angular * x[index] + vies
 
-# Defina hiperparâmetros do Gradiente Descendente 
-taxa_aprendizado = 0.01
-num_iteracoes = 1000
+        #Cálculo do erro em relação ao ponto de dados
+        erro = y_previsto - y[index]
 
-# Inicialize os parâmetros do modelo (coeficiente angular e intercepto)
-coef_angular = 0
-intercepto = 0
+        #Atualizando os parâmetros usando o gradiente
+        gradiente_coef = 2 * erro * x[index]
+        gradiente_vies = 2 * erro
 
-# Lista para armazenar o histórico do MSE
-mse_hist = []
+        coef_angular -= taxa_aprendizado * gradiente_coef
+        vies -= taxa_aprendizado * gradiente_vies
 
-for _ in range(num_iteracoes):
-    # Calcule as previsões do modelo
-    y_pred = coef_angular * x + intercepto
+        #Cálculo do MSE atual e o armazenenamento dele na lista
+        mse_atual = np.mean((y - (coef_angular * x + vies))**2)
+        lista_mse.append(mse_atual)
+    
+    return coef_angular, vies, lista_mse
 
-    # Calcule o erro
-    erro = y_pred - y
 
-    # Atualize os parâmetros usando o gradiente
-    gradiente_coef = (2 / len(x)) * np.sum(erro * x)
-    gradiente_intercepto = (2 / len(x)) * np.sum(erro)
+if __name__ == '__main__':
+    #Nomeando as colunas
+    colunas = ['a', 'b']
 
-    coef_angular -= taxa_aprendizado * gradiente_coef
-    intercepto -= taxa_aprendizado * gradiente_intercepto
+    df = pd.read_csv('regressão_linear_simples/artificial1d.csv', names=colunas) 
 
-    # Calcule o MSE atual e o armazene
-    mse_atual = np.mean(erro**2)
-    mse_hist.append(mse_atual)
+    x = df['a']
+    y = df['b']
 
-# Imprima os parâmetros do modelo e o MSE
-print(f"Coeficiente Angular: {coef_angular:.2f}")
-print(f"Intercepto: {intercepto:.2f}")
-print(f"Erro Quadrático Médio (MSE): {mse_hist[-1]:.2f}")
+    #Normalização das características
+    x = (x - x.mean()) / x.std()
 
-# Plote a curva de aprendizagem (MSE vs. Iterações)
-plt.plot(range(1, num_iteracoes + 1), mse_hist)
-plt.xlabel('Número de Iterações')
-plt.ylabel('Erro Quadrático Médio (MSE)')
-plt.title('Curva de Aprendizagem do Gradiente Descendente')
-plt.show()
+    #Hiperparâmetros do Gradiente Descendente Estocástico
+    taxa_aprendizado = 0.02
+    # nmr_iteracoes = 100
+    nmr_iteracoes = 500
 
-# Plote a reta de regressão sobre os dados
-plt.scatter(x, y, label='Dados Originais')
-plt.plot(x, coef_angular * x + intercepto, color='red', label='Regressão Linear (GD)')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.legend()
-plt.title('Regressão Linear com Gradiente Descendente')
-plt.show()
+    #Variáveis que recebem o Gradiente Descendente
+    coef_angular, vies, lista_mse = SGD(x, y, taxa_aprendizado, nmr_iteracoes)
+
+    #Print dos parâmetros do modelo 
+    print(f"Coeficiente Angular: {coef_angular:.2f}")
+    print(f"Viés: {vies:.2f}")
+    print(f"MSE: {lista_mse[-1]:.2f}")
+
+    #Plotando a curva de aprendizagem 
+    plt.plot(range(1, nmr_iteracoes + 1), lista_mse)
+    plt.xlabel('Número de Iterações')
+    plt.ylabel('Erro Quadrático Médio (MSE)')
+    plt.title('Curva de Aprendizagem do Gradiente Descendente Estocástico')
+    plt.show()
+
+    #Plotando a reta de regressão sobre os dados
+    y_previsto = coef_angular * x + vies
+    plt.scatter(x, y, label='Dados Recebidos')
+    plt.plot(x, y_previsto, color='red', label='Regressão Linear')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.title('Regressão Linear com Gradiente Descendente Estocástico')
+    plt.show()

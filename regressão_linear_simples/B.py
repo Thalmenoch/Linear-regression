@@ -11,20 +11,20 @@ def gradiente_descendente(x, y, taxa_aprendizado, nmr_iteracoes):
     #Inicialização dos parâmetros do modelo
     coef_angular = 0
     vies = 0
-    m = len(x) #Normaliza o gradiente pela quantidade de pontos de dados
+    norm = len(x) #Normaliza o gradiente pela quantidade de pontos de dados
     
     #Lista para armazenar os valores do MSE
     lista_mse = []
     
     for _ in range(nmr_iteracoes):
-        #Cálcula as previsões do modelo
+        #Cálculando as previsões do modelo
         y_previsto = coef_angular * x + vies
         
-        #Cálcula os gradientes dos parâmetros
-        gradiente_coef_angular = (-2/m) * np.sum(x * (y - y_previsto))
-        gradiente_vies = (-2/m) * np.sum(y - y_previsto)
+        #Cálculando os gradientes dos parâmetros
+        gradiente_coef_angular = (-2/norm) * np.sum(x * (y - y_previsto))
+        gradiente_vies = (-2/norm) * np.sum(y - y_previsto)
         
-        #Atualiza os parâmetros usando o gradiente
+        #Atualizando os parâmetros usando o gradiente
         coef_angular -= taxa_aprendizado * gradiente_coef_angular
         vies -= taxa_aprendizado * gradiente_vies
         
@@ -44,17 +44,13 @@ if __name__ == '__main__':
     x = df['a']
     y = df['b']
 
-    # Médias
-    # media_x = np.mean(x)
-    # media_y = np.mean(y)
-
     #Normalização das características
     x = (x - x.mean()) / x.std()
 
     #Hiperparâmetros do Gradiente Descendente
     taxa_aprendizado = 0.02
-    nmr_iteracoes = 500
-    # nmr_iteracoes = 60
+    # nmr_iteracoes = 500
+    nmr_iteracoes = 60
 
     #Variáveis que recebem o Gradiente Descendente
     coef_angular, vies, lista_mse = gradiente_descendente(x, y, taxa_aprendizado, nmr_iteracoes)

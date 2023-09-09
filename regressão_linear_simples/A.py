@@ -22,6 +22,8 @@ if __name__ == '__main__':
     x = df['a']
     y = df['b']
 
+    x = (x - x.mean()) / x.std()
+
     #Médias
     media_x = np.mean(x)
     media_y = np.mean(y)
@@ -29,7 +31,7 @@ if __name__ == '__main__':
     #Parâmetros do modelo
     coef_angular, vies = OLS(x, y, media_x, media_y)
 
-    # Calcule as previsões do modelo
+    #Cálculo das previsões do modelo
     y_previsto = coef_angular * x + vies
     
     #Variável que recebe a função MSE
