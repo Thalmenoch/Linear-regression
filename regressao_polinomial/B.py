@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
+from regressao_linear import MSE
 
 # Carregue o conjunto de dados a partir do arquivo CSV
 data = pd.read_csv('regressao_polinomial/boston.csv')
@@ -20,26 +20,23 @@ X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.2, ran
 mse_scores = []
 r2_scores = []
 
-# Loop através de diferentes ordens de polinômio
 for ordem in range(1, 12):
-    # Transforme os atributos para a ordem atual do polinômio
-    poly = PolynomialFeatures(degree=ordem)
-    X_treino_poly = poly.fit_transform(X_treino)
-    X_teste_poly = poly.transform(X_teste)
-    
-    # Treine um modelo de regressão linear nos atributos transformados
-    modelo = LinearRegression()
-    modelo.fit(X_treino_poly, y_treino)
-    
+    # Aplique a transformação polinomial aos atributos de treinamento e teste
+    X_treino_poly = np.column_stack([X_treino ** i for i in range(1, ordem + 1)])
+    X_teste_poly = np.column_stack([X_teste ** i for i in range(1, ordem + 1)])
+
+    # Calcule os coeficientes do modelo de regressão polinomial usando a fórmula dos mínimos quadrados
+    coeficientes = np.linalg.inv(X_treino_poly.T @ X_treino_poly) @ X_treino_poly.T @ y_treino
+
     # Faça previsões no conjunto de teste
-    y_pred = modelo.predict(X_teste_poly)
-    
+    y_pred = X_teste_poly @ coeficientes
+
     # Calcule o erro quadrático médio (MSE)
-    mse = mean_squared_error(y_teste, y_pred)
+    mse = np.mean((y_teste - y_pred) ** 2)
     mse_scores.append(mse)
-    
+
     # Calcule o coeficiente de determinação (R²)
-    r2 = r2_score(y_teste, y_pred)
+    r2 = 1 - np.sum((y_teste - y_pred) ** 2) / np.sum((y_teste - np.mean(y_teste)) ** 2)
     r2_scores.append(r2)
 
 # Plote um gráfico das métricas em relação à ordem do polinômio
@@ -50,11 +47,12 @@ plt.title('Erro Quadrático Médio (MSE)')
 plt.xlabel('Ordem do Polinômio')
 plt.ylabel('MSE')
 
-plt.subplot(1, 2, 2)
-plt.plot(range(1, 12), r2_scores, marker='o')
-plt.title('Coeficiente de Determinação (R²)')
-plt.xlabel('Ordem do Polinômio')
-plt.ylabel('R²')
+# Imprima as métricas de desempenho
+for ordem, mse, r2 in zip(range(1, 12), mse_scores, r2_scores):
+    print(f"Ordem do Polinômio: {ordem}")
+    print(f"Erro Quadrático Médio (MSE): {mse:.4f}")
+    print(f"Coeficiente de Determinação (R²): {r2:.4f}")
+    print("=" * 40)
+    
 
-plt.tight_layout()
 plt.show()
