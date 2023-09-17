@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from regressao_linear.B import MSE
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import Ridge
 
 # Carregue o conjunto de dados a partir do arquivo CSV
 data = pd.read_csv('regressao_polinomial/boston.csv')
@@ -60,6 +61,12 @@ plt.plot(range(1, 12), mse_scores, marker='o')
 plt.title('Erro Quadrático Médio (MSE)')
 plt.xlabel('Ordem do Polinômio')
 plt.ylabel('MSE')
+
+plt.subplot(1, 2, 2)
+plt.plot(range(1, 12), r2_scores, marker='o')
+plt.title('Coeficiente de Determinação (R²)')
+plt.xlabel('Ordem do Polinômio')
+plt.ylabel('R²')
 
 # Imprima as métricas de desempenho
 for ordem, mse, r2 in zip(range(1, 12), mse_scores, r2_scores):
