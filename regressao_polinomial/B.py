@@ -7,9 +7,6 @@ from sklearn.preprocessing import MinMaxScaler
 def MSE(y, y_previsto):
     return np.mean((y - y_previsto) ** 2)
 
-def re2(y_teste, y_pred):
-    return  1 - np.sum((y_teste - y_pred) ** 2) / np.sum((y_teste - np.mean(y_teste)) ** 2)
-
 def regularizacao(x_treino_poly, y_treino):
     # Defina o parâmetro de regularização (alpha)
     alpha = 1.0  # Ajuste conforme necessário
@@ -22,10 +19,10 @@ def regularizacao(x_treino_poly, y_treino):
 
     return coeficientes
 
-def treinamento_do_modelo(x_treino_norm, x_teste_norm, y_treino, y_teste):
+def treinamento_do_modelo(x_treino_norm, x_teste_norm, y_treino_norm, y_teste_norm):
     # Inicialize listas para armazenar métricas de desempenho
-    lista_mse = []
-    lista_r2 = []
+    lista_mse_treino = []
+    lista_mse_teste = []
 
     # Loop através de diferentes ordens de polinômio
     for ordem in range(1, 12):
@@ -37,21 +34,26 @@ def treinamento_do_modelo(x_treino_norm, x_teste_norm, y_treino, y_teste):
         
         # Faça previsões no conjunto de teste
         y_pred = X_teste_poly @ coeficientes
-
+        
+        # desnormalização
+        y_pred_desnormalizado = scaler_y.inverse_transform(y_pred.reshape(-1, 1)).flatten()
+        y_treino_desnormalizado = scaler_y.inverse_transform(y_treino_norm)
+        y_teste_desnormalizado = scaler_y.inverse_transform(y_teste_norm)
+        
         # Calcule as métricas de desempenho (por exemplo, MSE ou R²)
-        mse = MSE(y_teste, y_pred)
-        lista_mse.append(mse)
+        mse_treino = MSE(y_treino_desnormalizado, y_pred_desnormalizado)
+        lista_mse_treino.append(mse_treino)
 
-        r2 = re2(y_teste, y_pred)
-        lista_r2.append(r2)
+        mse_teste = MSE(y_teste_desnormalizado, y_pred_desnormalizado)
+        lista_mse_teste.append(mse_teste)
 
         # Imprima as métricas de desempenho
         print(f"Ordem do Polinômio: {ordem}")
-        print(f"Erro Quadrático Médio (MSE): {mse:.2f}")
-        print(f"Coeficiente de Determinação (R²): {r2:.2f}")
+        print(f"Erro Quadrático Médio (MSE) no treino: {mse_treino:.2f}")
+        print(f"Erro Quadrático Médio (MSE) no teste: {mse_teste:.2f}")
         print("=" * 40)
 
-    return lista_mse, lista_r2
+    return lista_mse_treino, lista_mse_teste
 
 if __name__ == '__main__':
 
@@ -62,28 +64,33 @@ if __name__ == '__main__':
     x = data.iloc[:, :-1]  # Atributos
     y = data.iloc[:, -1]   # Saídas
 
+    #Médias
+    media_x = np.mean(x)
+    media_y = np.mean(y)
+
     # Divida o conjunto de dados em treino (80%) e teste (20%)
     x_treino, x_teste, y_treino, y_teste = train_test_split(x, y, test_size=0.2, random_state=42)
 
-    scaler = MinMaxScaler()
-    x_treino_norm = scaler.fit_transform(x_treino)
-    x_teste_norm = scaler.transform(x_teste)
+    scaler_x = MinMaxScaler()
+    x_treino_norm = scaler_x.fit_transform(x_treino)
+    x_teste_norm = scaler_x.transform(x_teste)
+
+    # Normalizar as saídas (y)
+    scaler_y = MinMaxScaler()
+    y_treino_norm = scaler_y.fit_transform(y_treino.values.reshape(-1, 1))
+    y_teste_norm = scaler_y.transform(y_teste.values.reshape(-1, 1))
     # Suponha que você já normalizou seus atributos (x_treino_norm, x_teste_norm) e tem seus valores de saída (y_treino, y_teste) disponíveis.
 
-    lista_mse, lista_r2 = treinamento_do_modelo(x_treino_norm, x_teste_norm, y_treino, y_teste)
+    lista_mse_treino, lista_mse_teste = treinamento_do_modelo(x_treino_norm, x_teste_norm, y_treino_norm, y_teste_norm)
 
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
-    plt.plot(range(1, 12), lista_mse, marker='o')
+    plt.plot(range(1, 12), lista_mse_treino, marker='o', label='Treinamento')
+    plt.plot(range(1, 12), lista_mse_teste, marker='o', label='Teste')
     plt.title('Erro Quadrático Médio (MSE)')
     plt.xlabel('Ordem do Polinômio')
     plt.ylabel('MSE')
-
-    plt.subplot(1, 2, 2)
-    plt.plot(range(1, 12), lista_r2, marker='o')
-    plt.title('Coeficiente de Determinação (R²)')
-    plt.xlabel('Ordem do Polinômio')
-    plt.ylabel('R²')
+    plt.legend()
 
     plt.tight_layout()
     plt.show()
