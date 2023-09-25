@@ -1,10 +1,13 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 data = pd.read_csv('regressao_polinomial/boston.csv')
 
-x = data.iloc[:, :-1] #pegando as treze primeiras colunas como atributos 
-y = data.iloc[:, -1]  #pegando última coluna como saída
+# Suponha que você tenha todas as colunas no arquivo 'boston.csv', incluindo a coluna 'target' como o alvo
+X = data.iloc[:, :-1].values
+y = data.iloc[:, -1].values
 
-#Divide o conjunto de dados em treino (80%) e teste (20%)
-x_treino, x_teste, y_treino, y_teste = train_test_split(x, y, test_size=0.2, random_state=42)
+# Dividir os dados em conjuntos de treinamento e teste (80% treinamento, 20% teste)
+split_ratio = 0.8
+split_index = int(len(X) * split_ratio)
+
+X_train, X_test, y_train, y_test = X[:split_index], X[split_index:], y[:split_index], y[split_index:]
