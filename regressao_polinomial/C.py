@@ -12,7 +12,7 @@ def RMSE(y, y_previsto):
 def regularizacao(x_treino_poly, y_treino, alpha):
     I = np.identity(x_treino_poly.shape[1])
     coeficientes = np.linalg.inv(x_treino_poly.T @ x_treino_poly + alpha * I) @ x_treino_poly.T @ y_treino
-    return coeficientes
+    return coeficientes 
 
 # Função para treinar o modelo
 def treinamento_do_modelo(x_treino_norm, x_teste_norm, y_treino, y_teste, alpha):
