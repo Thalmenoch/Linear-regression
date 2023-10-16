@@ -1,26 +1,21 @@
 import numpy as np
 
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
+def distancia_euclidiana(p1, p2):
+    return np.sqrt(np.sum((p1 - p2) ** 2))
 
-def calcular_custo(theta, X, y):
-    m = len(y)
-    h = sigmoid(np.dot(X, theta))
-    custo = (-1/m) * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
-    return custo
+# Função para encontrar os k vizinhos mais próximos
+def encontrar_vizinhos(X_treino, ponto, k):
+    distancias = []
+    for i, x in enumerate(X_treino):
+        dist = distancia_euclidiana(ponto, x)
+        distancias.append((i, dist))
+    distancias.sort(key=lambda x: x[1])
+    vizinhos = [x[0] for x in distancias[:k]]
+    return vizinhos
 
-# Função de treinamento da regressão logística com Gradient Descent
-def treinar_regressao_logistica(X, y, learning_rate, num_epochs):
-    m, n = X.shape
-    theta = np.zeros(n)
-
-    for epoch in range(num_epochs):
-        z = np.dot(X, theta)
-        h = sigmoid(z)
-        gradient = (1/m) * np.dot(X.T, (h - y))
-        theta -= learning_rate * gradient
-
-        custo = calcular_custo(theta, X, y)
-        print(f'Época {epoch + 1}/{num_epochs}, Custo: {custo}')
-
-    return theta
+# Função para fazer a classificação com base nos vizinhos
+def classificar(X_treino, y_treino, ponto, k):
+    vizinhos = encontrar_vizinhos(X_treino, ponto, k)
+    classes_vizinhos = [y_treino[i] for i in vizinhos]
+    classe_mais_comum = np.bincount(classes_vizinhos).argmax()
+    return classe_mais_comum
