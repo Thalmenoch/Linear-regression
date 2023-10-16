@@ -6,9 +6,9 @@ def calcular_parametros(x, y):
     parametros = []
 
     for classe in classes:
-        X_classe = x[y == classe]
-        media = np.mean(X_classe, axis=0)
-        covariancia = np.cov(X_classe, rowvar=False)
+        x_classe = x[y == classe]
+        media = np.mean(x_classe, axis=0)
+        covariancia = np.cov(x_classe, rowvar=False)
         parametros.append((media, covariancia))
 
     return parametros
