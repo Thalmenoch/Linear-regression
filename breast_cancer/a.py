@@ -10,7 +10,7 @@ def calcular_custo(theta, x, y):
     custo = (-1/m) * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
     return custo
 
-# Função de treinamento da regressão logística com Gradient Descent
+# Funcao de treinamento da regressão logística com Gradient Descent
 def treinar_regressao_logistica(x, y, learning_rate, num_epochs):
     m, n = x.shape
     theta = np.zeros(n)
@@ -27,7 +27,7 @@ def treinar_regressao_logistica(x, y, learning_rate, num_epochs):
     return theta
 #================================================================================
 # Discriminante Gaussiano
-# Função para calcular os parâmetros do GDA
+# Funcao para calcular os parametros do GDA
 def calcular_parametros(x, y):
     classes = np.unique(y)
     parametros = []
@@ -40,7 +40,7 @@ def calcular_parametros(x, y):
 
     return parametros
 
-# Função para calcular a probabilidade da classe usando a distribuição gaussiana
+# Funcao para calcular a probabilidade da classe usando a distribuicao gaussiana
 def calcular_probabilidade_classe(x, media, covariancia):
     n = len(media)
     det_cov = np.linalg.det(covariancia)
@@ -52,7 +52,7 @@ def calcular_probabilidade_classe(x, media, covariancia):
 
     return probabilidade
 
-# Função para fazer previsões
+# Funcao para fazer previsoes
 def prever(x, parametros):
     previsoes = []
     for x in x:
@@ -66,7 +66,7 @@ def prever(x, parametros):
 #================================================================================
 
 #Naive Bayes Gaussiano
-# Função para calcular os parâmetros do Naive Bayes Gaussiano
+# Funcao para calcular os parametros do Naive Bayes Gaussiano
 def calcular_parametros(x, y):
     classes = np.unique(y)
     parametros = []
@@ -79,7 +79,7 @@ def calcular_parametros(x, y):
 
     return parametros
 
-# Função para calcular a probabilidade de uma amostra pertencer a uma classe
+# Funcao para calcular a probabilidade de uma amostra pertencer a uma classe
 def calcular_probabilidade_classe(x, media, desvio_padrao):
     probabilidade = 1.0
     for i in range(len(x)):
@@ -87,7 +87,7 @@ def calcular_probabilidade_classe(x, media, desvio_padrao):
                         np.exp(-((x[i] - media[i]) ** 2) / (2 * (desvio_padrao[i] ** 2)))
     return probabilidade
 
-# Função para fazer previsões
+# Funcao para fazer previsoes
 def prever(x, parametros):
     previsoes = []
     for x in x:
@@ -104,7 +104,7 @@ def prever(x, parametros):
 def distancia_euclidiana(p1, p2):
     return np.sqrt(np.sum((p1 - p2) ** 2))
 
-# Função para encontrar os k vizinhos mais próximos
+# Funcao para encontrar os k vizinhos mais proximos
 def encontrar_vizinhos(x_treino, ponto, k):
     distancias = []
     for i, x in enumerate(x_treino):
@@ -114,7 +114,7 @@ def encontrar_vizinhos(x_treino, ponto, k):
     vizinhos = [x[0] for x in distancias[:k]]
     return vizinhos
 
-# Função para fazer a classificação com base nos vizinhos
+# Funcao para fazer a classificacao com base nos vizinhos
 def classificar(x_treino, y_treino, ponto, k):
     vizinhos = encontrar_vizinhos(x_treino, ponto, k)
     classes_vizinhos = [y_treino[i] for i in vizinhos]
