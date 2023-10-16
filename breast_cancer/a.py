@@ -25,6 +25,10 @@ def treinar_regressao_logistica(x, y, learning_rate, num_epochs):
         print(f'Época {epoch + 1}/{num_epochs}, Custo: {custo}')
 
     return theta
+
+def prever(x, theta):
+    probabilidade = sigmoid(np.dot(x, theta))
+    return (probabilidade >= 0.5).astype(int)
 #================================================================================
 # Discriminante Gaussiano
 # Funcao para calcular os parametros do GDA
