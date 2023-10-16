@@ -1,4 +1,7 @@
+import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
+from metodos import *
 
 # Função para calcular os parâmetros do GDA
 def calcular_parametros(x, y):
@@ -36,3 +39,44 @@ def prever(x, parametros):
         classe_prevista = np.argmax(probabilidades_classe)
         previsoes.append(classe_prevista)
     return previsoes
+    
+
+if __name__ == '__main__':
+    arquivo_csv = 'breast_cancer/breast.csv'
+    df = pd.read_csv(arquivo_csv)
+
+    # Separar as colunas em atributos e saída
+    atributos = df.iloc[:, :-1]
+    saida = df.iloc[:, -1]
+
+    # Converter os DataFrames para arrays NumPy
+    X = atributos.values
+    y = saida.values
+    
+    X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Treinar o modelo GDA e calcular os parâmetros
+    parametros = calcular_parametros(X_treino, y_treino)
+
+    # Fazer previsões com o modelo GDA
+    previsoes = prever(X_teste, parametros)
+
+    # Calcular a matriz de confusão
+    TP, FP, TN, FN = calcular_matriz_confusao(y_teste, previsoes)
+
+    # Calcular métricas de desempenho
+    acuracia = calcular_acuracia(y_teste, previsoes)
+    revocacao = calcular_revocacao(y_teste, previsoes)
+    precisao = calcular_precisao(y_teste, previsoes)
+    f1 = calcular_f1_score(y_teste, previsoes)
+
+    # Apresentar as métricas
+    print(f'Acurácia: {acuracia:.2f}')
+    print(f'Revocação: {revocacao:.2f}')
+    print(f'Precisão: {precisao:.2f}')
+    print(f'F1-Score: {f1:.2f}')
+
+    # Plotar a matriz de confusão e métricas
+    plot_confusion_matrix(TP, FP, TN, FN)
+    plot_metrics(acuracia, precisao, revocacao, f1)
+    
