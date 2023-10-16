@@ -1,12 +1,12 @@
 import numpy as np
 
 # Função para calcular os parâmetros do GDA
-def calcular_parametros(X, y):
+def calcular_parametros(x, y):
     classes = np.unique(y)
     parametros = []
 
     for classe in classes:
-        X_classe = X[y == classe]
+        X_classe = x[y == classe]
         media = np.mean(X_classe, axis=0)
         covariancia = np.cov(X_classe, rowvar=False)
         parametros.append((media, covariancia))
@@ -26,9 +26,9 @@ def calcular_probabilidade_classe(x, media, covariancia):
     return probabilidade
 
 # Função para fazer previsões
-def prever(X, parametros):
+def prever(x, parametros):
     previsoes = []
-    for x in X:
+    for x in x:
         probabilidades_classe = []
         for media, covariancia in parametros:
             probabilidade = calcular_probabilidade_classe(x, media, covariancia)

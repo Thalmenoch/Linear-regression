@@ -1,14 +1,14 @@
 import numpy as np
 
 # Função para calcular os parâmetros do Naive Bayes Gaussiano
-def calcular_parametros(X, y):
+def calcular_parametros(x, y):
     classes = np.unique(y)
     parametros = []
 
     for classe in classes:
-        X_classe = X[y == classe]
-        media = np.mean(X_classe, axis=0)
-        desvio_padrao = np.std(X_classe, axis=0)
+        x_classe = x[y == classe]
+        media = np.mean(x_classe, axis=0)
+        desvio_padrao = np.std(x_classe, axis=0)
         parametros.append((media, desvio_padrao))
 
     return parametros
@@ -22,9 +22,9 @@ def calcular_probabilidade_classe(x, media, desvio_padrao):
     return probabilidade
 
 # Função para fazer previsões
-def prever(X, parametros):
+def prever(x, parametros):
     previsoes = []
-    for x in X:
+    for x in x:
         probabilidades_classe = []
         for media, desvio_padrao in parametros:
             probabilidade = calcular_probabilidade_classe(x, media, desvio_padrao)
