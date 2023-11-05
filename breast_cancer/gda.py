@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # Converter os DataFrames para arrays NumPy
     X = atributos.values
     y = saida.values
-    
+
     X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Treinar o modelo GDA e calcular os parâmetros
@@ -65,10 +65,10 @@ if __name__ == '__main__':
     TP, FP, TN, FN = calcular_matriz_confusao(y_teste, previsoes)
 
     # Calcular métricas de desempenho
-    acuracia = calcular_acuracia(y_teste, previsoes)
-    revocacao = calcular_revocacao(y_teste, previsoes)
-    precisao = calcular_precisao(y_teste, previsoes)
-    f1 = calcular_f1_score(y_teste, previsoes)
+    acuracia = calcular_acuracia(TP, FP, TN, FN)
+    revocacao = calcular_revocacao(TP, FN)
+    precisao = calcular_precisao(TP, FP)
+    f1 = calcular_f1_score(TP, FN)
 
     # Apresentar as métricas
     print(f'Acurácia: {acuracia:.2f}')

@@ -1,35 +1,31 @@
-import numpy as np
 import matplotlib.pyplot as plt
 
-def calcular_acuracia(y_verdadeiro, y_predito):
-    return np.mean(y_verdadeiro == y_predito)
+# Função para calcular a acurácia usando TP, FP, TN, FN
+def calcular_acuracia(tp, fp, tn, fn):
+    total = tp + fp + tn + fn
+    return (tp + tn) / total
 
-# Função para calcular a revocação
-def calcular_revocacao(y_verdadeiro, y_predito):
-    tp = np.sum((y_verdadeiro == 1) & (y_predito == 1))
-    fn = np.sum((y_verdadeiro == 1) & (y_predito == 0))
+# Função para calcular a revocação (recall) usando TP e FN
+def calcular_revocacao(tp, fn):
     if (tp + fn) == 0:
         return 0.0  # Lidar com o caso especial quando TP e FN são zero
     else:
         return tp / (tp + fn)
 
-# Função para calcular a precisão
-def calcular_precisao(y_verdadeiro, y_predito):
-    tp = np.sum((y_verdadeiro == 1) & (y_predito == 1))
-    fp = np.sum((y_verdadeiro == 0) & (y_predito == 1))
+# Função para calcular a precisão usando TP e FP
+def calcular_precisao(tp, fp):
     if (tp + fp) == 0:
         return 0.0  # Lidar com o caso especial quando TP e FP são zero
     else:
         return tp / (tp + fp)
 
-# Função para calcular o F1-Score
-def calcular_f1_score(y_verdadeiro, y_predito):
-    precisao = calcular_precisao(y_verdadeiro, y_predito)
-    revocacao = calcular_revocacao(y_verdadeiro, y_predito)
-    
-    if precisao == 0 or revocacao == 0:
-        return 0.0  # Lidar com o caso especial quando ambos precisao e revocacao são zero
+# Função para calcular o F1-Score usando TP e FN
+def calcular_f1_score(tp, fn):
+    if tp == 0 and fn == 0:
+        return 0.0  # Lidar com o caso especial quando TP e FN são zero
     else:
+        precisao = calcular_precisao(tp, 0)  # Nenhum FP
+        revocacao = calcular_revocacao(tp, fn)
         return 2 * (precisao * revocacao) / (precisao + revocacao)
 
 def calcular_matriz_confusao(y_real, y_predito):
